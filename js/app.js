@@ -20,28 +20,33 @@ let countdownInterval = null;
 enableBtn.addEventListener('click', async () => {
   enableBtn.disabled = true;
 
-  const granted = await sensors.requestPermission();
-  if (!granted && sensors.isSupported()) {
-    statusEl.textContent = 'Motion permission denied. Tap Enable again to retry.';
+  try {
+    const granted = await sensors.requestPermission();
+    if (!granted && sensors.isSupported()) {
+      statusEl.textContent = 'Motion permission denied. Tap Enable again to retry.';
+      enableBtn.disabled = false;
+      return;
+    }
+
+    sensors.start();
+    await Tone.start();
+    audio.init();
+    audio.start(sensors);
+
+    statusEl.textContent = sensors.isSupported()
+      ? 'Playing. Tilt your phone to change the music.'
+      : 'No motion sensor detected - playing a fixed neutral note.';
+
+    recordBtn.disabled = !recorder.isSupported();
+    if (!recorder.isSupported()) {
+      recordBtn.title = 'Recording is not supported in this browser.';
+    }
+
+    setInterval(updateReadout, 100);
+  } catch (err) {
+    statusEl.textContent = 'Could not start audio. Tap Enable to try again.';
     enableBtn.disabled = false;
-    return;
   }
-
-  sensors.start();
-  await Tone.start();
-  audio.init();
-  audio.start(sensors);
-
-  statusEl.textContent = sensors.isSupported()
-    ? 'Playing. Tilt your phone to change the music.'
-    : 'No motion sensor detected - playing a fixed neutral note.';
-
-  recordBtn.disabled = !recorder.isSupported();
-  if (!recorder.isSupported()) {
-    recordBtn.title = 'Recording is not supported in this browser.';
-  }
-
-  setInterval(updateReadout, 100);
 });
 
 function updateReadout() {

@@ -18,9 +18,12 @@ let recordStartTime = 0;
 let countdownInterval = null;
 
 enableBtn.addEventListener('click', async () => {
+  enableBtn.disabled = true;
+
   const granted = await sensors.requestPermission();
   if (!granted && sensors.isSupported()) {
     statusEl.textContent = 'Motion permission denied. Tap Enable again to retry.';
+    enableBtn.disabled = false;
     return;
   }
 
@@ -33,7 +36,6 @@ enableBtn.addEventListener('click', async () => {
     ? 'Playing. Tilt your phone to change the music.'
     : 'No motion sensor detected - playing a fixed neutral note.';
 
-  enableBtn.disabled = true;
   recordBtn.disabled = !recorder.isSupported();
   if (!recorder.isSupported()) {
     recordBtn.title = 'Recording is not supported in this browser.';

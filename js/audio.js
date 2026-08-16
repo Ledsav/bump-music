@@ -1,4 +1,4 @@
-import { CHORD_PROGRESSION, valueToNote, valueToChordIndex } from './mapping.js';
+import { CHORD_PROGRESSION, valueToChordIndex, valueToNote } from './mapping.js';
 import { bumpinessToTier } from './variants.js';
 
 let melodySynth;
@@ -12,16 +12,21 @@ let percussionLoop;
 let percussionTick;
 let recordingDestination;
 let analyser;
+let limiter;
 
 export function init(variant) {
+  limiter = new Tone.Limiter(-6).toDestination();
+
   melodySynth = new Tone.Synth({
     oscillator: { type: 'triangle' },
     envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 },
-  }).toDestination();
+    volume: -8,
+  }).connect(limiter);
   bassSynth = new Tone.MonoSynth({
     oscillator: { type: 'sine' },
     envelope: { attack: 0.005, decay: 0.1, sustain: 0.9, release: 0.4 },
-  }).toDestination();
+    volume: -8,
+  }).connect(limiter);
   padSynth = new Tone.PolySynth(Tone.Synth, {
     oscillator: { type: 'sine' },
     envelope: {
@@ -31,17 +36,17 @@ export function init(variant) {
       release: variant.pad.release,
     },
     volume: variant.pad.volume,
-  }).toDestination();
-  kick = new Tone.MembraneSynth().toDestination();
+  }).connect(limiter);
+  kick = new Tone.MembraneSynth({ volume: -6 }).connect(limiter);
   hihat = new Tone.NoiseSynth({
-    volume: -18,
+    volume: -20,
     envelope: { attack: 0.001, decay: 0.05, sustain: 0 },
-  }).toDestination();
+  }).connect(limiter);
 
   recordingDestination = Tone.context.createMediaStreamDestination();
   Tone.Destination.connect(recordingDestination);
 
-  analyser = new Tone.Analyser('waveform', 256);
+  analyser = new Tone.Analyser('waveform', 1024);
   Tone.Destination.connect(analyser);
 
   Tone.Transport.bpm.value = variant.baseTempo;

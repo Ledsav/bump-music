@@ -81,8 +81,8 @@ async function startPlayback() {
       : 'No motion sensor detected - playing a fixed neutral note.';
 
     playing = true;
-    iconPlay.hidden = true;
-    iconPause.hidden = false;
+    iconPlay.classList.add('is-hidden');
+    iconPause.classList.remove('is-hidden');
     mainBtn.setAttribute('aria-label', 'Stop');
     mainBtn.disabled = false;
 
@@ -111,8 +111,8 @@ function stopPlayback() {
   }
 
   playing = false;
-  iconPlay.hidden = false;
-  iconPause.hidden = true;
+  iconPlay.classList.remove('is-hidden');
+  iconPause.classList.add('is-hidden');
   mainBtn.setAttribute('aria-label', 'Play');
   recordBtn.disabled = true;
   statusEl.textContent = 'Tap play to start.';

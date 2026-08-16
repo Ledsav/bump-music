@@ -55,22 +55,44 @@ function draw() {
 
   ctx.clearRect(0, 0, width, height);
   ctx.lineWidth = 4;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
   ctx.strokeStyle = '#7dd3fc';
   ctx.shadowColor = '#7dd3fc';
   ctx.shadowBlur = 12;
   ctx.beginPath();
 
-  const sliceWidth = width / values.length;
-  let x = 0;
-  for (let i = 0; i < values.length; i++) {
-    const v = values[i];
-    const y = (v * 0.4 + 0.5) * height;
-    if (i === 0) {
-      ctx.moveTo(x, y);
-    } else {
-      ctx.lineTo(x, y);
+  // Downsample the raw waveform into a coarser set of points, then draw a
+  // smooth curve through their midpoints (quadratic bezier smoothing) so the
+  // trace reads as a flowing curve instead of a jagged, pointy polyline.
+  const pointCount = Math.min(96, values.length);
+  const samplesPerPoint = values.length / pointCount;
+  const points = new Array(pointCount);
+  for (let i = 0; i < pointCount; i++) {
+    const start = Math.floor(i * samplesPerPoint);
+    const end = Math.floor((i + 1) * samplesPerPoint);
+    let sum = 0;
+    let count = 0;
+    for (let j = start; j < end && j < values.length; j++) {
+      sum += values[j];
+      count++;
     }
-    x += sliceWidth;
+    const v = count > 0 ? sum / count : 0;
+    points[i] = {
+      x: (i / (pointCount - 1)) * width,
+      y: (v * 0.4 + 0.5) * height,
+    };
   }
+
+  ctx.moveTo(points[0].x, points[0].y);
+  for (let i = 0; i < points.length - 1; i++) {
+    const current = points[i];
+    const next = points[i + 1];
+    const midX = (current.x + next.x) / 2;
+    const midY = (current.y + next.y) / 2;
+    ctx.quadraticCurveTo(current.x, current.y, midX, midY);
+  }
+  const last = points[points.length - 1];
+  ctx.lineTo(last.x, last.y);
   ctx.stroke();
 }

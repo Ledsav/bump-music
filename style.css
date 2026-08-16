@@ -166,7 +166,7 @@ body {
   flex-shrink: 0;
 }
 
-.icon[hidden] {
+.icon.is-hidden {
   display: none;
 }
 

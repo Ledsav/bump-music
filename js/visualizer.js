@@ -10,6 +10,10 @@ export function init(canvasEl, analyserNode) {
 }
 
 export function start() {
+  if (rafId !== null) {
+    cancelAnimationFrame(rafId);
+    rafId = null;
+  }
   draw();
 }
 

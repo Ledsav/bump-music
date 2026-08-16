@@ -34,6 +34,9 @@ export function getRecordingStream() {
 }
 
 export function start(sensors) {
+  if (melodyLoop) melodyLoop.dispose();
+  if (chordLoop) chordLoop.dispose();
+
   melodyLoop = new Tone.Loop((time) => {
     const note = valueToNote(sensors.getMelodyValue());
     melodySynth.triggerAttackRelease(note, '8n', time);

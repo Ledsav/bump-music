@@ -14,8 +14,14 @@ let recordingDestination;
 let analyser;
 
 export function init(variant) {
-  melodySynth = new Tone.Synth({ oscillator: { type: 'triangle' } }).toDestination();
-  bassSynth = new Tone.MonoSynth({ oscillator: { type: 'sine' } }).toDestination();
+  melodySynth = new Tone.Synth({
+    oscillator: { type: 'triangle' },
+    envelope: { attack: 0.005, decay: 0.1, sustain: 0.3, release: 0.1 },
+  }).toDestination();
+  bassSynth = new Tone.MonoSynth({
+    oscillator: { type: 'sine' },
+    envelope: { attack: 0.005, decay: 0.1, sustain: 0.9, release: 0.4 },
+  }).toDestination();
   padSynth = new Tone.PolySynth(Tone.Synth, {
     oscillator: { type: 'sine' },
     envelope: {

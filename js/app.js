@@ -19,7 +19,7 @@ let countdownInterval = null;
 
 enableBtn.addEventListener('click', async () => {
   const granted = await sensors.requestPermission();
-  if (!granted) {
+  if (!granted && sensors.isSupported()) {
     statusEl.textContent = 'Motion permission denied. Tap Enable again to retry.';
     return;
   }

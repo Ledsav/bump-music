@@ -2,11 +2,30 @@ let canvas;
 let ctx;
 let analyser;
 let rafId = null;
+let resizeListener = null;
 
 export function init(canvasEl, analyserNode) {
   canvas = canvasEl;
   ctx = canvas.getContext('2d');
   analyser = analyserNode;
+
+  resizeCanvas();
+  if (resizeListener) {
+    window.removeEventListener('resize', resizeListener);
+  }
+  resizeListener = resizeCanvas;
+  window.addEventListener('resize', resizeListener);
+}
+
+function resizeCanvas() {
+  if (!canvas) return;
+  const ratio = window.devicePixelRatio || 1;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
+  if (width === 0 || height === 0) return;
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
 }
 
 export function start() {
@@ -23,15 +42,15 @@ export function stop() {
     rafId = null;
   }
   if (ctx) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.clientWidth, canvas.clientHeight);
   }
 }
 
 function draw() {
   rafId = requestAnimationFrame(draw);
 
-  const width = canvas.width;
-  const height = canvas.height;
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
   const values = analyser.getValue();
 
   ctx.clearRect(0, 0, width, height);

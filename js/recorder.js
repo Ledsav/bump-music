@@ -2,7 +2,6 @@ const MAX_DURATION_MS = 2 * 60 * 1000;
 const MIME_TYPE = 'audio/webm;codecs=opus';
 
 let mediaRecorder = null;
-let chunks = [];
 let autoStopTimer = null;
 let lastObjectUrl = null;
 
@@ -11,7 +10,7 @@ export function isSupported() {
 }
 
 export function start(stream, onStop) {
-  chunks = [];
+  const chunks = [];
   mediaRecorder = new MediaRecorder(stream, { mimeType: MIME_TYPE });
 
   mediaRecorder.ondataavailable = (event) => {
@@ -19,7 +18,6 @@ export function start(stream, onStop) {
   };
 
   mediaRecorder.onstop = () => {
-    clearTimeout(autoStopTimer);
     if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
     const blob = new Blob(chunks, { type: MIME_TYPE });
     lastObjectUrl = URL.createObjectURL(blob);
@@ -31,6 +29,7 @@ export function start(stream, onStop) {
 }
 
 export function stop() {
+  clearTimeout(autoStopTimer);
   if (mediaRecorder && mediaRecorder.state !== 'inactive') {
     mediaRecorder.stop();
   }

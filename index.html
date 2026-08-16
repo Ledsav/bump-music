@@ -8,28 +8,21 @@
 </head>
 <body>
   <main>
-    <h1>Bump Music</h1>
-    <button id="enable-btn">Enable Motion &amp; Audio</button>
+    <div id="variant-badge">-</div>
+
+    <section id="hero">
+      <div id="current-note">-</div>
+      <div id="current-chord">-</div>
+    </section>
+
+    <canvas id="waveform" width="320" height="120"></canvas>
+
     <p id="status">Tap the button to start.</p>
 
-    <section id="readout">
-      <div class="readout-row">
-        <span class="label">Note</span>
-        <span id="current-note">-</span>
-      </div>
-      <div class="readout-row">
-        <span class="label">Chord</span>
-        <span id="current-chord">-</span>
-      </div>
-      <div class="readout-row">
-        <span class="label">X</span>
-        <span id="x-bar">0.00</span>
-      </div>
-      <div class="readout-row">
-        <span class="label">Y</span>
-        <span id="y-bar">0.00</span>
-      </div>
-    </section>
+    <div id="entry-controls">
+      <button id="enable-btn">Enable Motion &amp; Audio</button>
+      <button id="stop-btn" style="display:none">Stop</button>
+    </div>
 
     <section id="controls">
       <button id="record-btn" disabled>Record</button>
